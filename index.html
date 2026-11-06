@@ -1,717 +1,80 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Simulado - Votorantim</title>
+<meta name="theme-color" content="#101522">
+<title>Central de Simulados</title>
 <style>
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  padding: 20px;
-  background: #f1f3f8;
-  color: #202638;
-  font-family: Arial, sans-serif;
-}
-
-header {
-  background: #18264a;
-  color: white;
-  padding: 25px;
-  border-radius: 14px;
-  max-width: 750px;
-  margin: auto;
-}
-
-main {
-  max-width: 750px;
-  margin: 20px auto;
-}
-
-.card {
-  background: white;
-  padding: 25px;
-  border-radius: 14px;
-  box-shadow: 0 5px 20px #0000000a;
-}
-
-.info {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-bottom: 15px;
-}
-
-.info span {
-  background: #e8edfa;
-  padding: 8px 12px;
-  border-radius: 20px;
-  font-size: 14px;
-}
-
-.progress {
-  height: 9px;
-  background: #ddd;
-  border-radius: 20px;
-  margin-bottom: 20px;
-  overflow: hidden;
-}
-
-#bar {
-  height: 100%;
-  width: 0%;
-  background: #3157c8;
-}
-
-#question {
-  margin: 20px 0;
-  line-height: 1.5;
-}
-
-.option {
-  display: block;
-  padding: 14px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  margin: 10px 0;
-  cursor: pointer;
-}
-
-.option:has(input:checked) {
-  background: #eaf0ff;
-  border-color: #3157c8;
-}
-
-button {
-  padding: 13px 20px;
-  border: none;
-  border-radius: 9px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.primary {
-  background: #3157c8;
-  color: white;
-}
-
-.secondary {
-  background: #e8eaf0;
-  color: #222;
-}
-
-.actions {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.hidden { display: none; }
-
-#result {
-  text-align: center;
-}
-
-.score {
-  font-size: 45px;
-  font-weight: bold;
-  color: #3157c8;
-}
-
-.review {
-  text-align: left;
-  margin-top: 25px;
-}
-
-.review div {
-  border-top: 1px solid #ddd;
-  padding: 12px 0;
-}
-
-@media(max-width: 480px) {
-  body { padding: 12px; }
-  .card { padding: 18px; }
-}
-
-#subjectStats,
-#history {
-  text-align: left;
-  margin-top: 25px;
-}
-
-#history > div {
-  border-top: 1px solid #ddd;
-  padding: 12px 0;
-}
+:root{color-scheme:dark;--bg:#0d111b;--panel:#171f30;--panel2:#1d2940;--line:#2b3952;--text:#f2f5fb;--muted:#a7b2c7;--blue:#6d91ff;--green:#65d6a0}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;padding:28px 18px;background:radial-gradient(ellipse at top,#1c2a49 0,#0d111b 55%);font-family:Arial,sans-serif;color:var(--text)}
+main{width:min(900px,100%);margin:0 auto}
+.hero{padding:30px 28px;border:1px solid var(--line);border-radius:22px;background:linear-gradient(135deg,#1b2943,#141b2a);box-shadow:0 18px 50px #0005}
+.eyebrow{font-size:12px;letter-spacing:2px;color:#9db4ff;font-weight:bold}
+h1{font-size:clamp(30px,6vw,46px);margin:12px 0 8px}
+p{line-height:1.55}
+.subtitle{color:var(--muted);margin:0}
+.summary{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.pill{border:1px solid #3b4c6c;background:#202e48;padding:9px 13px;border-radius:999px;font-size:13px;color:#dce6ff}
+.section-title{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:30px 2px 14px}
+.section-title h2{margin:0;font-size:21px}
+.section-title span{font-size:13px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:14px}
+.card{display:flex;flex-direction:column;min-height:205px;padding:20px;border-radius:18px;background:var(--panel);border:1px solid var(--line);transition:transform .18s,border-color .18s}
+.card.available{background:linear-gradient(145deg,#1d2d49,#172235);border-color:#49639a}
+.card.available:hover{transform:translateY(-3px);border-color:var(--blue)}
+.card-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.number{font-size:12px;letter-spacing:1.5px;color:#a9bcf4;font-weight:bold}
+.status{font-size:11px;padding:6px 9px;border-radius:99px;background:#233c35;color:var(--green);font-weight:bold}
+.status.soon{background:#2a3040;color:#aab4c7}
+.card h3{font-size:21px;margin:19px 0 7px}
+.card p{font-size:13px;color:var(--muted);margin:0 0 18px}
+.card a,.disabled-link{margin-top:auto;display:block;text-align:center;padding:12px;border-radius:10px;text-decoration:none;font-weight:bold;font-size:14px}
+.card a{background:var(--blue);color:#0c1426}
+.disabled-link{background:#252d3d;color:#8490a5}
+.note{margin:24px 2px 0;color:var(--muted);font-size:12px;text-align:center}
+@media(max-width:480px){body{padding:16px 12px}.hero{padding:23px 19px}.section-title{align-items:start;flex-direction:column}}
 </style>
 </head>
-
 <body>
-
-<header>
-  <h1>Simulado de Concurso</h1>
-  <p>Auxiliar de Serviços Infantis</p>
-  <small>Prefeitura de Votorantim - SP</small>
-</header>
-
 <main>
+  <header class="hero">
+    <div class="eyebrow">ÁREA DE ESTUDOS • VOTORANTIM / SP</div>
+    <h1>Central de Simulados</h1>
+    <p class="subtitle">Escolha um simulado e continue sua preparação para Auxiliar de Serviços Infantis.</p>
+    <div class="summary">
+      <span class="pill">40 questões por simulado</span>
+      <span class="pill">Português • Matemática • Conhecimentos específicos</span>
+    </div>
+  </header>
 
-<section id="quiz" class="card">
-
-  <div class="info">
-    <span id="counter">Questão 1/40</span>
-    <span id="subject">Português</span>
-    <span id="timer">00:00</span>
+  <div class="section-title">
+    <h2>Escolha seu simulado</h2>
+    <span>Novos desafios serão adicionados aqui</span>
   </div>
 
-  <div class="progress">
-    <div id="bar"></div>
-  </div>
-
-  <h3 id="topic"></h3>
-  <h2 id="question"></h2>
-
-  <div id="options"></div>
-
-  <div class="actions">
-    <button class="secondary" onclick="previous()">Anterior</button>
-    <button class="primary" onclick="next()" id="next">
-      Próxima
-    </button>
-  </div>
-
-</section>
-
-<section id="result" class="card hidden">
-  <h2>Resultado final</h2>
-  <div class="score" id="score"></div>
-  <p id="summary"></p>
-
-  <button class="primary" onclick="location.reload()">
-    Refazer simulado
-  </button>
-
-  <div class="review" id="review"></div>
-  <div class="review" id="subjectStats"></div>
-  <div class="review" id="history"></div>
-</section>
-
+  <section class="grid" aria-label="Lista de simulados">
+    <article class="card available">
+      <div class="card-top"><span class="number">SIMULADO 01</span><span class="status">DISPONÍVEL</span></div>
+      <h3>Primeiro desafio</h3>
+      <p>40 questões com cronômetro, resultado, gabarito comentado e histórico de tentativas.</p>
+      <a href="simulado-1.html">Iniciar simulado →</a>
+    </article>
+    <article class="card">
+      <div class="card-top"><span class="number">SIMULADO 02</span><span class="status soon">EM BREVE</span></div>
+      <h3>Segundo desafio</h3>
+      <p>Um novo conjunto de questões para continuar praticando.</p>
+      <span class="disabled-link">Em preparação</span>
+    </article>
+    <article class="card">
+      <div class="card-top"><span class="number">SIMULADO 03</span><span class="status soon">EM BREVE</span></div>
+      <h3>Terceiro desafio</h3>
+      <p>Mais questões para testar seus conhecimentos.</p>
+      <span class="disabled-link">Em preparação</span>
+    </article>
+  </section>
+  <p class="note">Seu progresso salvo no navegador continua disponível no dispositivo em que você realizou o simulado.</p>
 </main>
-
-<script>
-
-const questions = [
-{
-subject:"Português",
-topic:"Interpretação",
-q:"O cuidado e a educação devem caminhar juntos, respeitando as necessidades de cada criança. Qual é a ideia principal?",
-o:["Priorizar somente a higiene","Aplicar atividades idênticas","Cuidar e educar respeitando cada criança","Evitar brincadeiras","Deixar todas sem acompanhamento"],
-a:2,
-e:"O auxiliar deve unir cuidado e educação, respeitando as necessidades individuais."
-},
-{
-subject:"Português",
-topic:"Ortografia",
-q:"Qual alternativa apresenta todas as palavras escritas corretamente?",
-o:["Excessão, higiene, criança","Exceção, higiene, criança","Exceção, igiene, criança","Excessão, ijiene, criança","Esceção, crianza"],
-a:1,
-e:"As grafias corretas são exceção, higiene e criança."
-},
-{
-subject:"Português",
-topic:"Pontuação",
-q:"Qual frase apresenta pontuação correta?",
-o:["Crianças, precisam de atenção.","Crianças precisam, de atenção.","Crianças precisam de atenção.","Crianças precisam de, atenção.","Crianças, precisam, de atenção."],
-a:2,
-e:"Não se separa o sujeito do verbo por vírgula."
-},
-{
-subject:"Português",
-topic:"Concordância",
-q:"Complete: As crianças _____ acompanhadas durante a atividade.",
-o:["Foi","Foram","Era","Estava","Será"],
-a:1,
-e:"O verbo deve concordar com o sujeito plural."
-},
-{
-subject:"Português",
-topic:"Vocabulário",
-q:"A palavra acolhedor significa:",
-o:["Hostil","Receptivo","Perigoso","Indiferente","Barulhento"],
-a:1,
-e:"Acolhedor significa receptivo e que recebe bem."
-},
-{
-subject:"Português",
-topic:"Interpretação",
-q:"Um aviso diz: A reunião será às 14h na biblioteca. Onde será a reunião?",
-o:["Pátio","Secretaria","Biblioteca","Cozinha","Entrada"],
-a:2,
-e:"A localização está indicada diretamente no aviso."
-},
-{
-subject:"Português",
-topic:"Classes gramaticais",
-q:"Na frase 'A auxiliar organizou cuidadosamente os brinquedos', cuidadosamente indica:",
-o:["Lugar","Tempo","Modo","Quantidade","Negação"],
-a:2,
-e:"É um advérbio de modo."
-},
-{
-subject:"Português",
-topic:"Crase",
-q:"Qual frase apresenta o uso correto da crase?",
-o:["Entregou o recado à diretora.","Chegou à pé.","Começou à brincar.","Pediu ajuda à ele.","Foi à pé."],
-a:0,
-e:"A expressão à diretora combina a preposição a com o artigo feminino a."
-},
-{
-subject:"Português",
-topic:"Pronomes",
-q:"Na frase 'A criança guardou seu brinquedo', seu é:",
-o:["Verbo","Pronome possessivo","Advérbio","Preposição","Conjunção"],
-a:1,
-e:"Seu indica posse."
-},
-{
-subject:"Português",
-topic:"Coesão",
-q:"Complete: A criança estava cansada, _____ descansou.",
-o:["Porém","Portanto","Embora","Mas","Nem"],
-a:1,
-e:"Portanto expressa uma consequência."
-},
-
-{
-subject:"Matemática",
-topic:"Adição",
-q:"Uma turma tem 18 crianças. Chegaram mais 7. Quantas são agora?",
-o:["23","24","25","26","27"],
-a:2,
-e:"18 + 7 = 25."
-},
-{
-subject:"Matemática",
-topic:"Subtração",
-q:"A escola recebeu 60 copos e utilizou 24. Quantos sobraram?",
-o:["34","35","36","37","38"],
-a:2,
-e:"60 - 24 = 36."
-},
-{
-subject:"Matemática",
-topic:"Multiplicação",
-q:"Há 5 mesas com 4 crianças em cada uma. Quantas crianças há?",
-o:["9","15","20","25","30"],
-a:2,
-e:"5 × 4 = 20."
-},
-{
-subject:"Matemática",
-topic:"Divisão",
-q:"30 lápis foram divididos igualmente entre 5 grupos. Quantos cada grupo recebeu?",
-o:["5","6","7","8","9"],
-a:1,
-e:"30 ÷ 5 = 6."
-},
-{
-subject:"Matemática",
-topic:"Porcentagem",
-q:"Uma escola tem 200 alunos. 10% participam de uma atividade. Quantos são?",
-o:["10","15","20","25","30"],
-a:2,
-e:"10% de 200 = 20."
-},
-{
-subject:"Matemática",
-topic:"Tempo",
-q:"Uma atividade começou às 8h15 e terminou às 9h. Quanto durou?",
-o:["30 minutos","35 minutos","40 minutos","45 minutos","50 minutos"],
-a:3,
-e:"De 8h15 até 9h são 45 minutos."
-},
-{
-subject:"Matemática",
-topic:"Dinheiro",
-q:"Uma compra custou R$ 32. Foram pagos R$ 50. Qual foi o troco?",
-o:["R$ 16","R$ 17","R$ 18","R$ 19","R$ 20"],
-a:2,
-e:"50 - 32 = 18."
-},
-{
-subject:"Matemática",
-topic:"Regra de três",
-q:"2 caixas comportam 24 brinquedos. Quantos brinquedos cabem em 5 caixas iguais?",
-o:["48","50","55","60","64"],
-a:3,
-e:"Cada caixa comporta 12 brinquedos. 12 × 5 = 60."
-},
-{
-subject:"Matemática",
-topic:"Sequências",
-q:"Qual número completa: 3, 6, 9, 12, __?",
-o:["13","14","15","16","18"],
-a:2,
-e:"A sequência aumenta de 3 em 3."
-},
-{
-subject:"Matemática",
-topic:"Frações",
-q:"Uma pizza foi dividida em 8 pedaços. Uma criança comeu 2. Qual fração foi comida?",
-o:["1/8","1/4","1/2","3/4","2/3"],
-a:1,
-e:"2/8 simplificado é 1/4."
-},
-
-{
-subject:"Conhecimentos específicos",
-topic:"ECA",
-q:"O Estatuto da Criança e do Adolescente estabelece:",
-o:["Proteção apenas familiar","Proteção integral e garantia de direitos","Somente atendimento escolar","Direitos apenas em emergências","Ausência de responsabilidades do Estado"],
-a:1,
-e:"O ECA estabelece a proteção integral de crianças e adolescentes."
-},
-{
-subject:"Conhecimentos específicos",
-topic:"Proteção infantil",
-q:"Ao perceber sinais de possível violência contra uma criança, o profissional deve:",
-o:["Investigar sozinho","Ignorar","Comunicar pelos canais de proteção da instituição","Divulgar nas redes sociais","Confrontar os responsáveis sozinho"],
-a:2,
-e:"A situação deve ser comunicada conforme os protocolos de proteção."
-},
-{
-subject:"Conhecimentos específicos",
-topic:"Inclusão",
-q:"Uma prática inclusiva é:",
-o:["Separar crianças com dificuldades","Impedir brincadeiras coletivas","Adaptar estratégias para todos participarem","Exigir o mesmo ritmo de todos","Evitar interação"],
-a:2,
-e:"A inclusão busca garantir participação e remover barreiras."
-},
-{
-subject:"Conhecimentos específicos",
-topic:"Ética",
-q:"Informações pessoais de uma criança devem ser:",
-o:["Divulgadas aos colegas","Publicadas sem nomes","Preservadas e compartilhadas apenas com quem precisa saber","Comentadas com outros pais","Enviadas em grupos públicos"],
-a:2,
-e:"A confidencialidade protege a criança e sua família."
-},
-{
-subject:"Conhecimentos específicos",
-topic:"Higiene",
-q:"Quando é especialmente importante higienizar as mãos?",
-o:["Somente em casa","Antes de oferecer alimentos e após usar o banheiro ou trocar fraldas","Uma vez por dia","Apenas quando estiverem visivelmente sujas","Somente ao fim do expediente"],
-a:1,
-e:"A higiene das mãos ajuda a prevenir infecções."
-},
-{
-subject:"Conhecimentos específicos",
-topic:"Alimentação",
-q:"Durante a alimentação, o auxiliar deve:",
-o:["Forçar a criança a comer","Ignorar restrições alimentares","Supervisionar e respeitar as orientações alimentares","Deixar todas sem supervisão","Trocar alimentos por conta própria"],
-a:2,
-e:"A alimentação deve respeitar as necessidades de cada criança."
-},
-{
-subject:"Conhecimentos específicos",
-topic:"Segurança",
-q:"Ao encontrar o piso molhado, o auxiliar deve:",
-o:["Ignorar","Comunicar o risco e impedir a passagem até a limpeza segura","Pedir que as crianças corram","Esperar um acidente","Cobrir com papel"],
-a:1,
-e:"A prevenção exige sinalização e controle do acesso ao local."
-},
-{
-subject:"Conhecimentos específicos",
-topic:"Primeiros socorros",
-q:"Uma criança apresenta dificuldade intensa para respirar. O auxiliar deve:",
-o:["Oferecer água","Esperar alguns minutos","Acionar imediatamente o serviço de emergência e seguir o protocolo","Mandar caminhar","Dar medicamento por conta própria"],
-a:2,
-e:"Dificuldade intensa para respirar é uma emergência."
-},
-{
-subject:"Conhecimentos específicos",
-topic:"Desenvolvimento",
-q:"O desenvolvimento infantil envolve:",
-o:["Apenas aspectos físicos","Aspectos físicos, emocionais, sociais e cognitivos","Somente aprendizagem escolar","Apenas brincadeiras","O mesmo ritmo para todas as crianças"],
-a:1,
-e:"O desenvolvimento infantil é integral e possui ritmos individuais."
-},
-{
-subject:"Conhecimentos específicos",
-topic:"Brincadeiras",
-q:"As brincadeiras são importantes porque:",
-o:["Ocupam apenas o tempo","Substituem todos os cuidados","Favorecem aprendizagem e socialização","Devem ser evitadas","Não precisam de supervisão"],
-a:2,
-e:"Brincar favorece o desenvolvimento e a aprendizagem."
-},
-{
-subject:"Conhecimentos específicos",
-topic:"Rotina",
-q:"Uma rotina organizada contribui para:",
-o:["Insegurança","Previsibilidade e organização","Eliminar brincadeiras","Impedir adaptações","Substituir o planejamento"],
-a:1,
-e:"A rotina ajuda a criança a compreender a sequência do dia."
-},
-{
-subject:"Conhecimentos específicos",
-topic:"Acolhimento",
-q:"Uma criança nova chega chorando à escola. O auxiliar deve:",
-o:["Repreendê-la","Ignorá-la","Acolher com calma e oferecer segurança","Obrigá-la a participar","Compará-la com outras"],
-a:2,
-e:"O acolhimento respeitoso ajuda na adaptação."
-},
-{
-subject:"Conhecimentos específicos",
-topic:"Prevenção",
-q:"Qual atitude ajuda a prevenir acidentes no parque?",
-o:["Usar brinquedos quebrados","Supervisionar e verificar equipamentos","Deixar crianças pequenas sozinhas","Incentivar empurrões","Ignorar objetos no chão"],
-a:1,
-e:"Supervisão e inspeção reduzem riscos."
-},
-{
-subject:"Conhecimentos específicos",
-topic:"Diversidade",
-q:"Diante de crianças com culturas diferentes, o auxiliar deve:",
-o:["Valorizar apenas uma cultura","Fazer comentários depreciativos","Respeitar ambas e evitar discriminação","Impedir conversas","Exigir costumes iguais"],
-a:2,
-e:"A escola deve respeitar a diversidade."
-},
-{
-subject:"Conhecimentos específicos",
-topic:"Comunicação",
-q:"Ao observar uma mudança importante no comportamento infantil, o auxiliar deve:",
-o:["Rotular a criança","Comentar fora da escola","Comunicar a equipe responsável","Aplicar castigo","Ignorar sempre"],
-a:2,
-e:"Observações devem ser comunicadas de forma objetiva à equipe."
-},
-{
-subject:"Conhecimentos específicos",
-topic:"Autonomia",
-q:"Estimular autonomia significa:",
-o:["Fazer tudo pela criança","Deixá-la sem apoio","Incentivar tarefas adequadas à idade, oferecendo ajuda quando necessário","Impedir novas tentativas","Exigir independência completa"],
-a:2,
-e:"A autonomia é desenvolvida gradualmente, com apoio."
-},
-{
-subject:"Conhecimentos específicos",
-topic:"Higiene infantil",
-q:"Durante a troca de fraldas, o auxiliar deve:",
-o:["Deixar a criança sozinha","Higienizar as mãos e manter supervisão contínua","Reutilizar descartáveis","Dispensar a limpeza","Usar qualquer superfície"],
-a:1,
-e:"Higiene e supervisão são essenciais."
-},
-{
-subject:"Conhecimentos específicos",
-topic:"LDB",
-q:"Segundo a LDB, a educação infantil é:",
-o:["Uma etapa da educação básica","Um serviço exclusivamente de saúde","Uma atividade sem finalidade educativa","Parte do ensino superior","Responsabilidade exclusiva da família"],
-a:0,
-e:"A educação infantil é a primeira etapa da educação básica."
-},
-{
-subject:"Conhecimentos específicos",
-topic:"Família e escola",
-q:"Um responsável apresenta uma reclamação. O auxiliar deve:",
-o:["Discutir","Prometer mudanças sem autorização","Ouvir com respeito e encaminhar à equipe responsável","Expor outras crianças","Ignorar"],
-a:2,
-e:"A comunicação deve ser respeitosa e seguir os canais institucionais."
-},
-{
-subject:"Conhecimentos específicos",
-topic:"Conduta profissional",
-q:"Uma criança se recusa a participar de uma atividade. O auxiliar deve:",
-o:["Ameaçar punição","Forçar imediatamente","Acolher, compreender e conversar com a equipe sobre alternativas","Excluir das atividades futuras","Humilhar"],
-a:2,
-e:"A postura deve ser respeitosa e acolhedora."
-}
-];
-
-let current = 0;
-let answers = Array(questions.length).fill(null);
-let seconds = 0;
-
-function render() {
-  const q = questions[current];
-
-  document.getElementById("counter").textContent =
-    `Questão ${current+1}/40`;
-
-  document.getElementById("subject").textContent = q.subject;
-  document.getElementById("topic").textContent = q.topic;
-  document.getElementById("question").textContent = q.q;
-
-  document.getElementById("bar").style.width =
-    ((current+1)/40*100)+"%";
-
-  const options = document.getElementById("options");
-  options.innerHTML = "";
-
-  q.o.forEach((text,i) => {
-    const label = document.createElement("label");
-    label.className = "option";
-
-    const input = document.createElement("input");
-    input.type = "radio";
-    input.name = "answer";
-    input.checked = answers[current] === i;
-
-    input.onchange = () => {
-      answers[current] = i;
-    };
-
-    label.append(input, " "+String.fromCharCode(65+i)+") "+text);
-    options.appendChild(label);
-  });
-
-  document.getElementById("next").textContent =
-    current === 39 ? "Finalizar" : "Próxima";
-
-  document.querySelector(".actions button:first-child").disabled =
-    current === 0;
-}
-
-function next() {
-  if (answers[current] === null) {
-    alert("Escolha uma alternativa antes de continuar.");
-    return;
-  }
-
-  if (current < 39) {
-    current++;
-    render();
-  } else {
-    finish();
-  }
-}
-
-function previous() {
-  if (current > 0) {
-    current--;
-    render();
-  }
-}
-
-function finish() {
-  if (answers.some(a => a === null)) {
-    alert("Responda todas as questões antes de finalizar.");
-    return;
-  }
-
-  const correct = questions.reduce(
-    (total,q,i) => total + (answers[i] === q.a ? 1 : 0), 0
-  );
-  const percent = Math.round(correct / questions.length * 100);
-
-  const subjects = {};
-  questions.forEach((q,i) => {
-    if (!subjects[q.subject]) {
-      subjects[q.subject] = { correct: 0, total: 0 };
-    }
-    subjects[q.subject].total++;
-    if (answers[i] === q.a) subjects[q.subject].correct++;
-  });
-
-  const attempt = {
-    date: new Date().toISOString(),
-    correct,
-    total: questions.length,
-    percent,
-    seconds,
-    subjects
-  };
-
-  let historyData = [];
-  try {
-    historyData = JSON.parse(localStorage.getItem("simuladoHistorico") || "[]");
-    if (!Array.isArray(historyData)) historyData = [];
-  } catch (error) {
-    historyData = [];
-  }
-  historyData.push(attempt);
-  historyData = historyData.slice(-30);
-
-  try {
-    localStorage.setItem("simuladoHistorico", JSON.stringify(historyData));
-  } catch (error) {
-    alert("Não foi possível salvar o histórico neste navegador. Verifique o espaço disponível ou as configurações de privacidade.");
-  }
-
-  document.getElementById("quiz").classList.add("hidden");
-  document.getElementById("result").classList.remove("hidden");
-
-  document.getElementById("score").textContent = `${correct}/${questions.length}`;
-  document.getElementById("summary").textContent =
-    `Você acertou ${correct} e errou ${questions.length-correct}. Aproveitamento: ${percent}%.`;
-
-  const stats = document.getElementById("subjectStats");
-  stats.innerHTML = "<h3>Desempenho por matéria</h3>";
-  Object.entries(subjects).forEach(([name,data]) => {
-    const line = document.createElement("div");
-    const subjectPercent = Math.round(data.correct / data.total * 100);
-    line.textContent = `${name}: ${data.correct}/${data.total} (${subjectPercent}%)`;
-    stats.appendChild(line);
-  });
-
-  const review = document.getElementById("review");
-  review.innerHTML = "<h3>Gabarito comentado</h3>";
-
-  questions.forEach((q,i) => {
-    const item = document.createElement("div");
-    const letter = String.fromCharCode(65+q.a);
-
-    item.innerHTML = `
-      <strong>Questão ${i+1}</strong>
-      <p>Sua resposta: ${String.fromCharCode(65+answers[i])}</p>
-      <p>Gabarito: ${letter}</p>
-      <p>${q.e}</p>
-      <strong>${answers[i]===q.a ? "Acertou" : "Errou"}</strong>
-    `;
-
-    review.appendChild(item);
-  });
-
-  const history = document.getElementById("history");
-  history.innerHTML = "<h3>Histórico de tentativas</h3>";
-  const previousAttempt = historyData.length > 1
-    ? historyData[historyData.length - 2]
-    : null;
-
-  if (previousAttempt) {
-    const difference = percent - previousAttempt.percent;
-    const comparison = document.createElement("p");
-    comparison.textContent = difference > 0
-      ? `Você melhorou ${difference} pontos percentuais em relação à tentativa anterior.`
-      : difference < 0
-        ? `Seu resultado ficou ${Math.abs(difference)} pontos percentuais abaixo da tentativa anterior.`
-        : "Você manteve o mesmo aproveitamento da tentativa anterior.";
-    history.appendChild(comparison);
-  } else {
-    const first = document.createElement("p");
-    first.textContent = "Esta foi sua primeira tentativa salva neste navegador.";
-    history.appendChild(first);
-  }
-
-  historyData.slice().reverse().forEach((entry,index) => {
-    const line = document.createElement("div");
-    const date = new Date(entry.date).toLocaleString("pt-BR");
-    line.textContent = `${date} — ${entry.correct}/${entry.total} (${entry.percent}%)`;
-    history.appendChild(line);
-  });
-
-  window.scrollTo(0,0);
-}
-
-setInterval(() => {
-  seconds++;
-  const min = String(Math.floor(seconds/60)).padStart(2,"0");
-  const sec = String(seconds%60).padStart(2,"0");
-  document.getElementById("timer").textContent = min+":"+sec;
-},1000);
-
-render();
-</script>
 </body>
 </html>
