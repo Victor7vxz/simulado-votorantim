@@ -132,6 +132,44 @@ button {
   padding: 12px 0;
 }
 
+.review .review-item {
+  padding: 14px;
+  margin: 12px 0;
+  border: 1px solid #d7dce5;
+  border-left: 5px solid #9aa3b2;
+  border-radius: 10px;
+  background: #f8f9fc;
+}
+
+.review .review-item.correct {
+  border: 1px solid #a7dfbd;
+  border-left: 5px solid #239653;
+  background: #eaf8ef;
+}
+
+.review .review-item.incorrect {
+  border: 1px solid #f0b1b1;
+  border-left: 5px solid #d43c3c;
+  background: #fff0f0;
+}
+
+.review .review-item strong:last-child {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 5px 10px;
+  border-radius: 6px;
+}
+
+.review .review-item.correct strong:last-child {
+  color: #176b39;
+  background: #d1f0dc;
+}
+
+.review .review-item.incorrect strong:last-child {
+  color: #a32222;
+  background: #ffdddd;
+}
+
 @media(max-width: 480px) {
   body { padding: 12px; }
   .card { padding: 18px; }
@@ -931,6 +969,8 @@ function finish() {
 
   questions.forEach((q,i) => {
     const item = document.createElement("div");
+    const isCorrect = answers[i] === q.a;
+    item.className = `review-item ${isCorrect ? "correct" : "incorrect"}`;
     const letter = String.fromCharCode(65+q.a);
 
     item.innerHTML = `
@@ -938,7 +978,7 @@ function finish() {
       <p>Sua resposta: ${String.fromCharCode(65+answers[i])}</p>
       <p>Gabarito: ${letter}</p>
       <p>${q.e}</p>
-      <strong>${answers[i]===q.a ? "Acertou" : "Errou"}</strong>
+      <strong>${isCorrect ? "✓ Acertou" : "✕ Errou"}</strong>
     `;
 
     review.appendChild(item);
