@@ -195,6 +195,10 @@ button {
   <button class="primary" onclick="location.reload()">
     Refazer simulado
   </button>
+  <p style="margin-top:16px">
+    <a class="secondary" href="index.html" style="display:inline-block;padding:12px 18px;border-radius:10px;text-decoration:none;font-weight:600">← Voltar ao início</a>
+  </p>
+
 
   <div class="review" id="review"></div>
   <div class="review" id="subjectStats"></div>
@@ -864,7 +868,7 @@ function finish() {
 
   let historyData = [];
   try {
-    historyData = JSON.parse(localStorage.getItem("simuladoHistorico") || "[]");
+    historyData = JSON.parse(localStorage.getItem("simuladoHistorico2") || "[]");
     if (!Array.isArray(historyData)) historyData = [];
   } catch (error) {
     historyData = [];
@@ -873,7 +877,7 @@ function finish() {
   historyData = historyData.slice(-30);
 
   try {
-    localStorage.setItem("simuladoHistorico", JSON.stringify(historyData));
+    localStorage.setItem("simuladoHistorico2", JSON.stringify(historyData));
   } catch (error) {
     alert("Não foi possível salvar o histórico neste navegador. Verifique o espaço disponível ou as configurações de privacidade.");
   }
