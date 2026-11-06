@@ -1,0 +1,956 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Simulado 02 - Auxiliar de Serviços Infantis</title>
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 20px;
+  background: #f1f3f8;
+  color: #202638;
+  font-family: Arial, sans-serif;
+}
+
+header {
+  background: #18264a;
+  color: white;
+  padding: 25px;
+  border-radius: 14px;
+  max-width: 750px;
+  margin: auto;
+}
+
+main {
+  max-width: 750px;
+  margin: 20px auto;
+}
+
+.card {
+  background: white;
+  padding: 25px;
+  border-radius: 14px;
+  box-shadow: 0 5px 20px #0000000a;
+}
+
+.info {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+}
+
+.info span {
+  background: #e8edfa;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+.progress {
+  height: 9px;
+  background: #ddd;
+  border-radius: 20px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+#bar {
+  height: 100%;
+  width: 0%;
+  background: #3157c8;
+}
+
+#question {
+  margin: 20px 0;
+  line-height: 1.5;
+}
+
+.option {
+  display: block;
+  padding: 14px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  margin: 10px 0;
+  cursor: pointer;
+}
+
+.option:has(input:checked) {
+  background: #eaf0ff;
+  border-color: #3157c8;
+}
+
+button {
+  padding: 13px 20px;
+  border: none;
+  border-radius: 9px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.primary {
+  background: #3157c8;
+  color: white;
+}
+
+.secondary {
+  background: #e8eaf0;
+  color: #222;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.hidden { display: none; }
+
+#result {
+  text-align: center;
+}
+
+.score {
+  font-size: 45px;
+  font-weight: bold;
+  color: #3157c8;
+}
+
+.review {
+  text-align: left;
+  margin-top: 25px;
+}
+
+.review div {
+  border-top: 1px solid #ddd;
+  padding: 12px 0;
+}
+
+@media(max-width: 480px) {
+  body { padding: 12px; }
+  .card { padding: 18px; }
+}
+
+#subjectStats,
+#history {
+  text-align: left;
+  margin-top: 25px;
+}
+
+#history > div {
+  border-top: 1px solid #ddd;
+  padding: 12px 0;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <p><a href="index.html" style="color:#dbe5ff;text-decoration:none">← Voltar ao lobby</a></p>
+  <h1>Simulado 02</h1>
+  <p>Auxiliar de Serviços Infantis</p>
+  <small>Prefeitura de Votorantim - SP</small>
+</header>
+
+<main>
+
+<section id="quiz" class="card">
+
+  <div class="info">
+    <span id="counter">Questão 1/40</span>
+    <span id="subject">Português</span>
+    <span id="timer">00:00</span>
+  </div>
+
+  <div class="progress">
+    <div id="bar"></div>
+  </div>
+
+  <h3 id="topic"></h3>
+  <h2 id="question"></h2>
+
+  <div id="options"></div>
+
+  <div class="actions">
+    <button class="secondary" onclick="previous()">Anterior</button>
+    <button class="primary" onclick="next()" id="next">
+      Próxima
+    </button>
+  </div>
+
+</section>
+
+<section id="result" class="card hidden">
+  <h2>Resultado final</h2>
+  <div class="score" id="score"></div>
+  <p id="summary"></p>
+
+  <button class="primary" onclick="location.reload()">
+    Refazer simulado
+  </button>
+
+  <div class="review" id="review"></div>
+  <div class="review" id="subjectStats"></div>
+  <div class="review" id="history"></div>
+</section>
+
+</main>
+
+<script>
+
+const questions = [
+  {
+    "subject": "Português",
+    "topic": "Interpretação de texto",
+    "q": "Leia: “A organização dos espaços não elimina a necessidade de supervisão; ela apenas torna o ambiente mais favorável à aprendizagem.” De acordo com o trecho, é correto afirmar que:",
+    "o": [
+      "Um espaço organizado dispensa a presença do auxiliar.",
+      "A organização contribui, mas não substitui a supervisão.",
+      "A aprendizagem ocorre somente em ambientes silenciosos.",
+      "A supervisão impede a autonomia infantil.",
+      "A organização é responsabilidade exclusiva das crianças."
+    ],
+    "a": 1,
+    "e": "O trecho afirma que organizar o ambiente ajuda, mas não elimina a necessidade de supervisão."
+  },
+  {
+    "subject": "Português",
+    "topic": "Concordância verbal",
+    "q": "Assinale a alternativa em que a concordância verbal está correta.",
+    "o": [
+      "Houveram muitas atividades ontem.",
+      "Fazem dois meses que a turma iniciou.",
+      "Existe boas opções de brincadeiras.",
+      "Devem existir alternativas para a atividade.",
+      "Aconteceu várias mudanças na rotina."
+    ],
+    "a": 3,
+    "e": "O verbo existir concorda com o sujeito plural: “alternativas”; por isso, usa-se “devem existir”."
+  },
+  {
+    "subject": "Português",
+    "topic": "Pontuação",
+    "q": "Em qual alternativa a vírgula foi empregada corretamente?",
+    "o": [
+      "Durante a atividade, as crianças ouviram a história.",
+      "As crianças, ouviram a história durante a atividade.",
+      "Durante, a atividade as crianças ouviram a história.",
+      "As crianças ouviram, a história durante a atividade.",
+      "Durante a atividade as crianças, ouviram a história."
+    ],
+    "a": 0,
+    "e": "A vírgula separa corretamente a expressão adverbial deslocada no início da frase."
+  },
+  {
+    "subject": "Português",
+    "topic": "Crase",
+    "q": "Complete corretamente: “A auxiliar entregou o relatório ___ coordenadora e voltou ___ sala.”",
+    "o": [
+      "a / a",
+      "à / à",
+      "à / a",
+      "a / à",
+      "há / à"
+    ],
+    "a": 1,
+    "e": "Há crase nas duas ocorrências: “à coordenadora” e “à sala”."
+  },
+  {
+    "subject": "Português",
+    "topic": "Pronomes",
+    "q": "Na frase “A equipe conversou com os responsáveis e explicou-lhes a mudança”, o pronome “lhes” retoma:",
+    "o": [
+      "A equipe.",
+      "A mudança.",
+      "Os responsáveis.",
+      "A conversa.",
+      "A auxiliar."
+    ],
+    "a": 2,
+    "e": "“Lhes” funciona como pronome oblíquo e retoma “os responsáveis”."
+  },
+  {
+    "subject": "Português",
+    "topic": "Coesão textual",
+    "q": "Assinale a opção que completa melhor a frase: “A criança demonstrou insegurança no primeiro dia; ________, recebeu acolhimento e passou a participar.”",
+    "o": [
+      "contudo",
+      "por isso",
+      "apesar de",
+      "enquanto",
+      "nem"
+    ],
+    "a": 1,
+    "e": "“Por isso” estabelece uma relação de consequência entre o acolhimento e a participação."
+  },
+  {
+    "subject": "Português",
+    "topic": "Ortografia",
+    "q": "Assinale a alternativa em que todas as palavras estão grafadas corretamente.",
+    "o": [
+      "Excessivo, privilégio, consciência.",
+      "Exceção, previlégio, consciência.",
+      "Excessivo, privilégio, conciência.",
+      "Escessivo, privilégio, consciência.",
+      "Excessivo, previlégio, conciência."
+    ],
+    "a": 0,
+    "e": "As grafias corretas são “excessivo”, “privilégio” e “consciência”."
+  },
+  {
+    "subject": "Português",
+    "topic": "Sentido das palavras",
+    "q": "Na frase “A orientação foi clara, evitando interpretações equivocadas”, a palavra “equivocadas” pode ser substituída, sem alterar o sentido, por:",
+    "o": [
+      "Corretas.",
+      "Apres­sadas.",
+      "Inadequadas.",
+      "Incompletas.",
+      "Detalhadas."
+    ],
+    "a": 2,
+    "e": "“Equivocadas” significa erradas ou inadequadas ao contexto."
+  },
+  {
+    "subject": "Português",
+    "topic": "Classes gramaticais",
+    "q": "Em “As crianças brincaram bastante no pátio”, a palavra “bastante” modifica o verbo “brincaram”. Nesse contexto, ela é:",
+    "o": [
+      "Adjetivo.",
+      "Pronome.",
+      "Advérbio de intensidade.",
+      "Substantivo.",
+      "Preposição."
+    ],
+    "a": 2,
+    "e": "“Bastante” intensifica a ação de brincar e funciona como advérbio."
+  },
+  {
+    "subject": "Português",
+    "topic": "Regência",
+    "q": "Assinale a frase de acordo com a norma-padrão de regência verbal.",
+    "o": [
+      "A auxiliar assistiu o treinamento com atenção.",
+      "A auxiliar obedeceu o regulamento.",
+      "A auxiliar preferiu mais a atividade de leitura.",
+      "A auxiliar chegou na escola às sete horas.",
+      "A auxiliar informou os responsáveis sobre a reunião."
+    ],
+    "a": 4,
+    "e": "“Informar alguém sobre algo” é uma construção adequada. As demais alternativas apresentam problemas de regência ou uso."
+  },
+  {
+    "subject": "Matemática",
+    "topic": "Porcentagem",
+    "q": "Em uma escola com 160 crianças, 25% participam de uma atividade no período da manhã. Quantas crianças participam?",
+    "o": [
+      "20",
+      "30",
+      "35",
+      "40",
+      "45"
+    ],
+    "a": 3,
+    "e": "25% é um quarto: 160 ÷ 4 = 40 crianças."
+  },
+  {
+    "subject": "Matemática",
+    "topic": "Operações com decimais",
+    "q": "Uma compra de materiais custou R$ 18,75 e outra custou R$ 26,40. Qual foi o valor total?",
+    "o": [
+      "R$ 44,15",
+      "R$ 45,05",
+      "R$ 45,15",
+      "R$ 46,15",
+      "R$ 46,05"
+    ],
+    "a": 2,
+    "e": "18,75 + 26,40 = R$ 45,15."
+  },
+  {
+    "subject": "Matemática",
+    "topic": "Frações",
+    "q": "Uma caixa tinha 36 lápis. Foram distribuídos 2/3 deles. Quantos lápis foram distribuídos?",
+    "o": [
+      "12",
+      "18",
+      "20",
+      "24",
+      "27"
+    ],
+    "a": 3,
+    "e": "2/3 de 36 = 36 ÷ 3 × 2 = 24."
+  },
+  {
+    "subject": "Matemática",
+    "topic": "Regra de três",
+    "q": "Se 4 pacotes iguais contêm 48 folhas, quantas folhas haverá em 7 pacotes iguais?",
+    "o": [
+      "72",
+      "78",
+      "80",
+      "84",
+      "96"
+    ],
+    "a": 3,
+    "e": "Cada pacote contém 48 ÷ 4 = 12 folhas. Em 7 pacotes: 12 × 7 = 84."
+  },
+  {
+    "subject": "Matemática",
+    "topic": "Medidas de tempo",
+    "q": "Uma reunião começou às 13h35 e terminou às 15h10. Qual foi sua duração?",
+    "o": [
+      "1h25",
+      "1h30",
+      "1h35",
+      "1h40",
+      "1h45"
+    ],
+    "a": 2,
+    "e": "De 13h35 a 14h35 decorre 1 hora; até 15h10, mais 35 minutos."
+  },
+  {
+    "subject": "Matemática",
+    "topic": "Média aritmética",
+    "q": "Uma turma realizou quatro atividades e obteve as pontuações 6, 8, 7 e 9. Qual foi a média aritmética?",
+    "o": [
+      "7",
+      "7,5",
+      "8",
+      "8,5",
+      "9"
+    ],
+    "a": 1,
+    "e": "(6 + 8 + 7 + 9) ÷ 4 = 30 ÷ 4 = 7,5."
+  },
+  {
+    "subject": "Matemática",
+    "topic": "Perímetro",
+    "q": "Um espaço retangular destinado a uma atividade mede 8 metros de comprimento e 5 metros de largura. Qual é seu perímetro?",
+    "o": [
+      "13 m",
+      "26 m",
+      "32 m",
+      "40 m",
+      "45 m"
+    ],
+    "a": 1,
+    "e": "Perímetro do retângulo = 2 × (8 + 5) = 26 metros."
+  },
+  {
+    "subject": "Matemática",
+    "topic": "Sistema monetário",
+    "q": "Foram comprados 3 itens de R$ 7,80 cada. Se o pagamento foi feito com uma nota de R$ 50,00, qual foi o troco?",
+    "o": [
+      "R$ 24,60",
+      "R$ 25,60",
+      "R$ 26,60",
+      "R$ 27,40",
+      "R$ 28,60"
+    ],
+    "a": 2,
+    "e": "3 × 7,80 = R$ 23,40. Troco: 50,00 − 23,40 = R$ 26,60."
+  },
+  {
+    "subject": "Matemática",
+    "topic": "Conversão de unidades",
+    "q": "Uma atividade durou 2 horas e 25 minutos. Quantos minutos isso representa?",
+    "o": [
+      "125",
+      "135",
+      "140",
+      "145",
+      "150"
+    ],
+    "a": 3,
+    "e": "2 horas correspondem a 120 minutos; 120 + 25 = 145 minutos."
+  },
+  {
+    "subject": "Matemática",
+    "topic": "Sequência numérica",
+    "q": "Observe a sequência: 2, 5, 11, 23, 47, __. Qual é o próximo número?",
+    "o": [
+      "88",
+      "92",
+      "94",
+      "95",
+      "96"
+    ],
+    "a": 3,
+    "e": "Cada termo é o anterior multiplicado por 2 e acrescido de 1: 47 × 2 + 1 = 95."
+  },
+  {
+    "subject": "Conhecimentos específicos",
+    "topic": "ECA — direito à educação",
+    "q": "De acordo com o Estatuto da Criança e do Adolescente, é direito da criança e do adolescente:",
+    "o": [
+      "Receber educação visando ao pleno desenvolvimento, preparo para a cidadania e qualificação para o trabalho.",
+      "Frequentar a escola somente quando houver autorização do empregador.",
+      "Ter acesso à educação apenas mediante avaliação de renda.",
+      "Ser impedido de contestar critérios de avaliação escolar.",
+      "Receber atendimento educacional condicionado ao comportamento."
+    ],
+    "a": 0,
+    "e": "O ECA assegura o direito à educação voltada ao desenvolvimento, à cidadania e à qualificação para o trabalho."
+  },
+  {
+    "subject": "Conhecimentos específicos",
+    "topic": "Educação infantil — LDB",
+    "q": "Na organização da educação infantil prevista na LDB, a avaliação deve ocorrer:",
+    "o": [
+      "Por provas finais com objetivo de reprovação.",
+      "Por acompanhamento e registro do desenvolvimento, sem objetivo de promoção.",
+      "Somente por notas numéricas.",
+      "Apenas por comparação entre crianças.",
+      "Por exame obrigatório para ingresso no ensino fundamental."
+    ],
+    "a": 1,
+    "e": "A LDB prevê acompanhamento e registro do desenvolvimento, sem finalidade de promoção, inclusive para acesso ao ensino fundamental."
+  },
+  {
+    "subject": "Conhecimentos específicos",
+    "topic": "BNCC — direitos de aprendizagem",
+    "q": "Entre os direitos de aprendizagem e desenvolvimento da educação infantil previstos na BNCC está:",
+    "o": [
+      "Competir.",
+      "Memorizar.",
+      "Conviver.",
+      "Classificar colegas.",
+      "Antecipar conteúdos do ensino médio."
+    ],
+    "a": 2,
+    "e": "A BNCC estabelece seis direitos: conviver, brincar, participar, explorar, expressar e conhecer-se."
+  },
+  {
+    "subject": "Conhecimentos específicos",
+    "topic": "Desenvolvimento infantil",
+    "q": "Duas crianças da mesma idade apresentam habilidades diferentes. A conduta mais adequada é:",
+    "o": [
+      "Considerar uma delas incapaz.",
+      "Exigir que ambas alcancem resultados idênticos no mesmo prazo.",
+      "Respeitar os ritmos individuais e observar o desenvolvimento de cada uma.",
+      "Impedir que a criança com mais dificuldade participe.",
+      "Comparar publicamente o desempenho das duas."
+    ],
+    "a": 2,
+    "e": "O desenvolvimento apresenta ritmos individuais; a observação deve orientar apoios adequados, sem comparações depreciativas."
+  },
+  {
+    "subject": "Conhecimentos específicos",
+    "topic": "Inclusão e acessibilidade",
+    "q": "Uma criança com deficiência encontra dificuldade para participar de uma brincadeira coletiva. O auxiliar deve:",
+    "o": [
+      "Retirá-la da atividade para evitar adaptações.",
+      "Oferecer apoio e colaborar para remover barreiras à participação.",
+      "Deixar que participe apenas como observadora.",
+      "Substituir sempre a brincadeira por uma tarefa isolada.",
+      "Aguardar que as outras crianças resolvam a situação."
+    ],
+    "a": 1,
+    "e": "A inclusão exige identificar e reduzir barreiras, garantindo participação com os apoios necessários."
+  },
+  {
+    "subject": "Conhecimentos específicos",
+    "topic": "Prevenção de acidentes",
+    "q": "Ao identificar um brinquedo com peça solta e risco de causar acidente, o auxiliar deve:",
+    "o": [
+      "Continuar usando sob observação distante.",
+      "Guardar o brinquedo sem avisar ninguém.",
+      "Retirá-lo de uso e comunicar a equipe responsável.",
+      "Entregá-lo a uma criança mais velha.",
+      "Tentar consertá-lo durante a atividade, sem interrompê-la."
+    ],
+    "a": 2,
+    "e": "O item deve ser retirado de circulação e o problema comunicado para avaliação e providências."
+  },
+  {
+    "subject": "Conhecimentos específicos",
+    "topic": "Higiene e saúde",
+    "q": "Após ajudar uma criança a assoar o nariz, a medida adequada é:",
+    "o": [
+      "Limpar as mãos apenas na roupa.",
+      "Higienizar as mãos e descartar o material usado corretamente.",
+      "Guardar o lenço para reutilização.",
+      "Continuar servindo alimentos sem higienização.",
+      "Lavar as mãos somente no fim do dia."
+    ],
+    "a": 1,
+    "e": "A higiene das mãos após contato com secreções reduz o risco de transmissão de microrganismos."
+  },
+  {
+    "subject": "Conhecimentos específicos",
+    "topic": "Alimentação segura",
+    "q": "Durante o lanche, uma criança apresenta uma restrição alimentar registrada pela família e pela instituição. O auxiliar deve:",
+    "o": [
+      "Oferecer pequena quantidade do alimento proibido.",
+      "Trocar o alimento por qualquer outro disponível.",
+      "Seguir as orientações registradas e confirmar dúvidas com a equipe responsável.",
+      "Permitir que a própria criança escolha entre todos os alimentos.",
+      "Ignorar o registro se a criança disser que gosta do alimento."
+    ],
+    "a": 2,
+    "e": "Restrições alimentares devem ser respeitadas; dúvidas precisam ser esclarecidas com a equipe responsável."
+  },
+  {
+    "subject": "Conhecimentos específicos",
+    "topic": "Primeiros socorros",
+    "q": "Após uma queda, uma criança demonstra sonolência incomum e comportamento diferente do habitual. O auxiliar deve:",
+    "o": [
+      "Deixá-la dormir sem comunicar ninguém.",
+      "Oferecer medicamento por conta própria.",
+      "Comunicar imediatamente a equipe e acionar atendimento de saúde conforme o protocolo.",
+      "Mandá-la voltar à brincadeira.",
+      "Esperar até o fim do turno para informar a família."
+    ],
+    "a": 2,
+    "e": "Alterações após uma queda exigem avaliação rápida; deve-se seguir o protocolo institucional e buscar atendimento."
+  },
+  {
+    "subject": "Conhecimentos específicos",
+    "topic": "Ética profissional",
+    "q": "Um familiar pede ao auxiliar informações detalhadas sobre outra criança da turma. A resposta adequada é:",
+    "o": [
+      "Contar tudo para evitar conflito.",
+      "Compartilhar apenas informações que ouviu de outros funcionários.",
+      "Preservar a privacidade e orientar que o assunto seja tratado pelos canais institucionais apropriados.",
+      "Enviar fotos da criança pelo celular pessoal.",
+      "Comentar o caso sem mencionar o nome."
+    ],
+    "a": 2,
+    "e": "Informações individuais devem ser protegidas e não podem ser compartilhadas com pessoas sem autorização ou necessidade legítima."
+  },
+  {
+    "subject": "Conhecimentos específicos",
+    "topic": "Acolhimento e adaptação",
+    "q": "Durante o período de adaptação, uma criança demonstra dificuldade para se despedir do responsável. O auxiliar deve:",
+    "o": [
+      "Apressar a separação com repreensões.",
+      "Acolher a criança, manter uma postura tranquila e seguir a estratégia combinada com a equipe e a família.",
+      "Ignorar o choro até que pare.",
+      "Prometer que o responsável voltará imediatamente.",
+      "Impedir o responsável de conversar com a equipe."
+    ],
+    "a": 1,
+    "e": "A adaptação deve ser conduzida com acolhimento, previsibilidade e diálogo entre família e instituição."
+  },
+  {
+    "subject": "Conhecimentos específicos",
+    "topic": "Brincar e aprendizagem",
+    "q": "Ao organizar uma brincadeira de construção com blocos, o auxiliar contribui para o desenvolvimento de:",
+    "o": [
+      "Somente força física.",
+      "Apenas memorização de letras.",
+      "Coordenação, criatividade, resolução de problemas e interação.",
+      "Exclusivamente disciplina e silêncio.",
+      "Somente competição entre colegas."
+    ],
+    "a": 2,
+    "e": "Brincadeiras de construção podem mobilizar habilidades motoras, cognitivas, criativas e sociais."
+  },
+  {
+    "subject": "Conhecimentos específicos",
+    "topic": "Organização da rotina",
+    "q": "Uma mudança inesperada no horário de uma atividade deve ser conduzida de modo a:",
+    "o": [
+      "Ser escondida das crianças.",
+      "Ser comunicada de forma adequada, oferecendo referências sobre a nova sequência do dia.",
+      "Eliminar todas as demais atividades.",
+      "Ser explicada somente depois que o dia terminar.",
+      "Ser usada como punição coletiva."
+    ],
+    "a": 1,
+    "e": "Explicar mudanças de forma compreensível ajuda a criança a se orientar e lidar com a rotina."
+  },
+  {
+    "subject": "Conhecimentos específicos",
+    "topic": "Proteção integral",
+    "q": "Uma criança relata espontaneamente uma situação que a deixou com medo. O auxiliar deve:",
+    "o": [
+      "Fazer perguntas insistentes para obter todos os detalhes.",
+      "Prometer segredo absoluto.",
+      "Ouvir com atenção, acolher sem julgamento e comunicar a situação conforme o protocolo de proteção.",
+      "Questionar a criança diante dos colegas.",
+      "Divulgar o relato em grupo de mensagens."
+    ],
+    "a": 2,
+    "e": "O relato deve ser acolhido sem pressão ou exposição e encaminhado pelos canais adequados de proteção."
+  },
+  {
+    "subject": "Conhecimentos específicos",
+    "topic": "Relação família-escola",
+    "q": "Para favorecer a parceria entre família e instituição, a comunicação deve ser:",
+    "o": [
+      "Baseada em julgamentos sobre a família.",
+      "Restrita a reclamações.",
+      "Respeitosa, objetiva e voltada ao bem-estar e desenvolvimento da criança.",
+      "Feita apenas por mensagens informais entre funcionários.",
+      "Realizada publicamente diante de outras famílias."
+    ],
+    "a": 2,
+    "e": "O diálogo respeitoso e objetivo fortalece a parceria e mantém o foco nas necessidades da criança."
+  },
+  {
+    "subject": "Conhecimentos específicos",
+    "topic": "Autonomia infantil",
+    "q": "Uma criança tenta guardar os próprios materiais, mas ainda precisa de ajuda. O auxiliar deve:",
+    "o": [
+      "Fazer tudo por ela para terminar mais rápido.",
+      "Retirar os materiais até que aprenda.",
+      "Incentivar a tentativa e oferecer ajuda proporcional à necessidade.",
+      "Exigir que realize a tarefa perfeitamente.",
+      "Comparar sua organização com a dos colegas."
+    ],
+    "a": 2,
+    "e": "A autonomia se desenvolve com oportunidades de tentativa e apoio adequado, sem cobrança excessiva."
+  },
+  {
+    "subject": "Conhecimentos específicos",
+    "topic": "Diversidade e respeito",
+    "q": "Ao ouvir uma criança fazer comentário preconceituoso sobre a aparência de um colega, o auxiliar deve:",
+    "o": [
+      "Ignorar para não interromper a brincadeira.",
+      "Reforçar o comentário como brincadeira.",
+      "Intervir com respeito, orientar sobre a valorização das diferenças e comunicar a equipe quando necessário.",
+      "Punir publicamente todas as crianças presentes.",
+      "Afastar permanentemente as duas crianças."
+    ],
+    "a": 2,
+    "e": "É importante interromper a discriminação, promover respeito e seguir as orientações institucionais."
+  },
+  {
+    "subject": "Conhecimentos específicos",
+    "topic": "Supervisão",
+    "q": "Durante uma atividade no pátio, o auxiliar precisa buscar um material em outra sala. A atitude correta é:",
+    "o": [
+      "Sair rapidamente, pois a ausência será curta.",
+      "Pedir que uma criança cuide das demais.",
+      "Garantir que outro profissional responsável assuma a supervisão antes de se ausentar.",
+      "Deixar o portão aberto para facilitar o retorno.",
+      "Confiar que as crianças permanecerão no mesmo lugar."
+    ],
+    "a": 2,
+    "e": "A supervisão não deve ser interrompida; outro profissional precisa assumir a responsabilidade antes da saída."
+  },
+  {
+    "subject": "Conhecimentos específicos",
+    "topic": "Ambiente educativo",
+    "q": "A organização dos materiais ao alcance das crianças, considerando segurança e faixa etária, favorece:",
+    "o": [
+      "Dependência constante do adulto.",
+      "Autonomia e participação nas atividades.",
+      "A eliminação da supervisão.",
+      "O uso de qualquer material sem orientação.",
+      "A competição por objetos."
+    ],
+    "a": 1,
+    "e": "Materiais acessíveis e adequados favorecem escolhas, participação e autonomia, mantendo a supervisão."
+  },
+  {
+    "subject": "Conhecimentos específicos",
+    "topic": "Observação e registro",
+    "q": "Ao registrar uma ocorrência cotidiana, o auxiliar deve priorizar:",
+    "o": [
+      "Opiniões pessoais e rótulos sobre a criança.",
+      "Informações objetivas, relevantes e comunicadas pelos meios institucionais.",
+      "Comentários informais de terceiros.",
+      "Suposições sobre as intenções da criança.",
+      "Detalhes sem relação com o ocorrido."
+    ],
+    "a": 1,
+    "e": "Registros profissionais devem ser objetivos, relevantes e respeitar os procedimentos da instituição."
+  }
+];
+
+let current = 0;
+let answers = Array(questions.length).fill(null);
+let seconds = 0;
+
+function render() {
+  const q = questions[current];
+
+  document.getElementById("counter").textContent =
+    `Questão ${current+1}/40`;
+
+  document.getElementById("subject").textContent = q.subject;
+  document.getElementById("topic").textContent = q.topic;
+  document.getElementById("question").textContent = q.q;
+
+  document.getElementById("bar").style.width =
+    ((current+1)/40*100)+"%";
+
+  const options = document.getElementById("options");
+  options.innerHTML = "";
+
+  q.o.forEach((text,i) => {
+    const label = document.createElement("label");
+    label.className = "option";
+
+    const input = document.createElement("input");
+    input.type = "radio";
+    input.name = "answer";
+    input.checked = answers[current] === i;
+
+    input.onchange = () => {
+      answers[current] = i;
+    };
+
+    label.append(input, " "+String.fromCharCode(65+i)+") "+text);
+    options.appendChild(label);
+  });
+
+  document.getElementById("next").textContent =
+    current === 39 ? "Finalizar" : "Próxima";
+
+  document.querySelector(".actions button:first-child").disabled =
+    current === 0;
+}
+
+function next() {
+  if (answers[current] === null) {
+    alert("Escolha uma alternativa antes de continuar.");
+    return;
+  }
+
+  if (current < 39) {
+    current++;
+    render();
+  } else {
+    finish();
+  }
+}
+
+function previous() {
+  if (current > 0) {
+    current--;
+    render();
+  }
+}
+
+function finish() {
+  if (answers.some(a => a === null)) {
+    alert("Responda todas as questões antes de finalizar.");
+    return;
+  }
+
+  const correct = questions.reduce(
+    (total,q,i) => total + (answers[i] === q.a ? 1 : 0), 0
+  );
+  const percent = Math.round(correct / questions.length * 100);
+
+  const subjects = {};
+  questions.forEach((q,i) => {
+    if (!subjects[q.subject]) {
+      subjects[q.subject] = { correct: 0, total: 0 };
+    }
+    subjects[q.subject].total++;
+    if (answers[i] === q.a) subjects[q.subject].correct++;
+  });
+
+  const attempt = {
+    date: new Date().toISOString(),
+    correct,
+    total: questions.length,
+    percent,
+    seconds,
+    subjects
+  };
+
+  let historyData = [];
+  try {
+    historyData = JSON.parse(localStorage.getItem("simuladoHistorico") || "[]");
+    if (!Array.isArray(historyData)) historyData = [];
+  } catch (error) {
+    historyData = [];
+  }
+  historyData.push(attempt);
+  historyData = historyData.slice(-30);
+
+  try {
+    localStorage.setItem("simuladoHistorico", JSON.stringify(historyData));
+  } catch (error) {
+    alert("Não foi possível salvar o histórico neste navegador. Verifique o espaço disponível ou as configurações de privacidade.");
+  }
+
+  document.getElementById("quiz").classList.add("hidden");
+  document.getElementById("result").classList.remove("hidden");
+
+  document.getElementById("score").textContent = `${correct}/${questions.length}`;
+  document.getElementById("summary").textContent =
+    `Você acertou ${correct} e errou ${questions.length-correct}. Aproveitamento: ${percent}%.`;
+
+  const stats = document.getElementById("subjectStats");
+  stats.innerHTML = "<h3>Desempenho por matéria</h3>";
+  Object.entries(subjects).forEach(([name,data]) => {
+    const line = document.createElement("div");
+    const subjectPercent = Math.round(data.correct / data.total * 100);
+    line.textContent = `${name}: ${data.correct}/${data.total} (${subjectPercent}%)`;
+    stats.appendChild(line);
+  });
+
+  const review = document.getElementById("review");
+  review.innerHTML = "<h3>Gabarito comentado</h3>";
+
+  questions.forEach((q,i) => {
+    const item = document.createElement("div");
+    const letter = String.fromCharCode(65+q.a);
+
+    item.innerHTML = `
+      <strong>Questão ${i+1}</strong>
+      <p>Sua resposta: ${String.fromCharCode(65+answers[i])}</p>
+      <p>Gabarito: ${letter}</p>
+      <p>${q.e}</p>
+      <strong>${answers[i]===q.a ? "Acertou" : "Errou"}</strong>
+    `;
+
+    review.appendChild(item);
+  });
+
+  const history = document.getElementById("history");
+  history.innerHTML = "<h3>Histórico de tentativas</h3>";
+  const previousAttempt = historyData.length > 1
+    ? historyData[historyData.length - 2]
+    : null;
+
+  if (previousAttempt) {
+    const difference = percent - previousAttempt.percent;
+    const comparison = document.createElement("p");
+    comparison.textContent = difference > 0
+      ? `Você melhorou ${difference} pontos percentuais em relação à tentativa anterior.`
+      : difference < 0
+        ? `Seu resultado ficou ${Math.abs(difference)} pontos percentuais abaixo da tentativa anterior.`
+        : "Você manteve o mesmo aproveitamento da tentativa anterior.";
+    history.appendChild(comparison);
+  } else {
+    const first = document.createElement("p");
+    first.textContent = "Esta foi sua primeira tentativa salva neste navegador.";
+    history.appendChild(first);
+  }
+
+  historyData.slice().reverse().forEach((entry,index) => {
+    const line = document.createElement("div");
+    const date = new Date(entry.date).toLocaleString("pt-BR");
+    line.textContent = `${date} — ${entry.correct}/${entry.total} (${entry.percent}%)`;
+    history.appendChild(line);
+  });
+
+  window.scrollTo(0,0);
+}
+
+setInterval(() => {
+  seconds++;
+  const min = String(Math.floor(seconds/60)).padStart(2,"0");
+  const sec = String(seconds%60).padStart(2,"0");
+  document.getElementById("timer").textContent = min+":"+sec;
+},1000);
+
+render();
+</script>
+</body>
+</html>
