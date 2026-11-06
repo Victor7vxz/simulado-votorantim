@@ -858,6 +858,7 @@ function finish() {
   });
 
   const attempt = {
+    simulado: 2,
     date: new Date().toISOString(),
     correct,
     total: questions.length,
@@ -866,18 +867,45 @@ function finish() {
     subjects
   };
 
-  let historyData = [];
-  try {
-    historyData = JSON.parse(localStorage.getItem("simuladoHistorico2") || "[]");
-    if (!Array.isArray(historyData)) historyData = [];
-  } catch (error) {
-    historyData = [];
+  const historyData = [];
+  const seenAttempts = new Set();
+
+  function mergeHistory(key, defaultSimulado) {
+    try {
+      const saved = JSON.parse(localStorage.getItem(key) || "[]");
+      if (!Array.isArray(saved)) return;
+      saved.forEach(entry => {
+        const normalized = {
+          ...entry,
+          simulado: Number(entry.simulado) || defaultSimulado
+        };
+        const signature = [
+          normalized.simulado,
+          normalized.date,
+          normalized.correct,
+          normalized.total
+        ].join("|");
+        if (!seenAttempts.has(signature)) {
+          seenAttempts.add(signature);
+          historyData.push(normalized);
+        }
+      });
+    } catch (error) {
+      // Ignora históricos antigos inválidos e continua com os demais.
+    }
   }
+
+  // Reúne o histórico geral e importa os históricos antigos sem perder tentativas.
+  mergeHistory("historicoSimulados", 2);
+  mergeHistory("simuladoHistorico", 1);
+  mergeHistory("simuladoHistorico2", 2);
+
   historyData.push(attempt);
-  historyData = historyData.slice(-30);
+  historyData.sort((a,b) => new Date(a.date) - new Date(b.date));
+  const limitedHistory = historyData.slice(-30);
 
   try {
-    localStorage.setItem("simuladoHistorico2", JSON.stringify(historyData));
+    localStorage.setItem("historicoSimulados", JSON.stringify(limitedHistory));
   } catch (error) {
     alert("Não foi possível salvar o histórico neste navegador. Verifique o espaço disponível ou as configurações de privacidade.");
   }
@@ -918,8 +946,9 @@ function finish() {
 
   const history = document.getElementById("history");
   history.innerHTML = "<h3>Histórico de tentativas</h3>";
-  const previousAttempt = historyData.length > 1
-    ? historyData[historyData.length - 2]
+  const sameExamAttempts = limitedHistory.filter(entry => Number(entry.simulado) === 2);
+  const previousAttempt = sameExamAttempts.length > 1
+    ? sameExamAttempts[sameExamAttempts.length - 2]
     : null;
 
   if (previousAttempt) {
@@ -937,10 +966,11 @@ function finish() {
     history.appendChild(first);
   }
 
-  historyData.slice().reverse().forEach((entry,index) => {
+  limitedHistory.slice().reverse().forEach(entry => {
     const line = document.createElement("div");
     const date = new Date(entry.date).toLocaleString("pt-BR");
-    line.textContent = `${date} — ${entry.correct}/${entry.total} (${entry.percent}%)`;
+    const examLabel = `Simulado ${String(entry.simulado || 1).padStart(2,"0")}`;
+    line.textContent = `${examLabel} — ${date} — ${entry.correct}/${entry.total} (${entry.percent}%)`;
     history.appendChild(line);
   });
 
