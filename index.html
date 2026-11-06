@@ -136,6 +136,17 @@ button {
   body { padding: 12px; }
   .card { padding: 18px; }
 }
+
+#subjectStats,
+#history {
+  text-align: left;
+  margin-top: 25px;
+}
+
+#history > div {
+  border-top: 1px solid #ddd;
+  padding: 12px 0;
+}
 </style>
 </head>
 
@@ -185,6 +196,8 @@ button {
   </button>
 
   <div class="review" id="review"></div>
+  <div class="review" id="subjectStats"></div>
+  <div class="review" id="history"></div>
 </section>
 
 </main>
@@ -590,15 +603,57 @@ function finish() {
   const correct = questions.reduce(
     (total,q,i) => total + (answers[i] === q.a ? 1 : 0), 0
   );
+  const percent = Math.round(correct / questions.length * 100);
+
+  const subjects = {};
+  questions.forEach((q,i) => {
+    if (!subjects[q.subject]) {
+      subjects[q.subject] = { correct: 0, total: 0 };
+    }
+    subjects[q.subject].total++;
+    if (answers[i] === q.a) subjects[q.subject].correct++;
+  });
+
+  const attempt = {
+    date: new Date().toISOString(),
+    correct,
+    total: questions.length,
+    percent,
+    seconds,
+    subjects
+  };
+
+  let historyData = [];
+  try {
+    historyData = JSON.parse(localStorage.getItem("simuladoHistorico") || "[]");
+    if (!Array.isArray(historyData)) historyData = [];
+  } catch (error) {
+    historyData = [];
+  }
+  historyData.push(attempt);
+  historyData = historyData.slice(-30);
+
+  try {
+    localStorage.setItem("simuladoHistorico", JSON.stringify(historyData));
+  } catch (error) {
+    alert("Não foi possível salvar o histórico neste navegador. Verifique o espaço disponível ou as configurações de privacidade.");
+  }
 
   document.getElementById("quiz").classList.add("hidden");
   document.getElementById("result").classList.remove("hidden");
 
-  document.getElementById("score").textContent =
-    `${correct}/40`;
-
+  document.getElementById("score").textContent = `${correct}/${questions.length}`;
   document.getElementById("summary").textContent =
-    `Você acertou ${correct} e errou ${40-correct}. Aproveitamento: ${Math.round(correct/40*100)}%.`;
+    `Você acertou ${correct} e errou ${questions.length-correct}. Aproveitamento: ${percent}%.`;
+
+  const stats = document.getElementById("subjectStats");
+  stats.innerHTML = "<h3>Desempenho por matéria</h3>";
+  Object.entries(subjects).forEach(([name,data]) => {
+    const line = document.createElement("div");
+    const subjectPercent = Math.round(data.correct / data.total * 100);
+    line.textContent = `${name}: ${data.correct}/${data.total} (${subjectPercent}%)`;
+    stats.appendChild(line);
+  });
 
   const review = document.getElementById("review");
   review.innerHTML = "<h3>Gabarito comentado</h3>";
@@ -616,6 +671,34 @@ function finish() {
     `;
 
     review.appendChild(item);
+  });
+
+  const history = document.getElementById("history");
+  history.innerHTML = "<h3>Histórico de tentativas</h3>";
+  const previousAttempt = historyData.length > 1
+    ? historyData[historyData.length - 2]
+    : null;
+
+  if (previousAttempt) {
+    const difference = percent - previousAttempt.percent;
+    const comparison = document.createElement("p");
+    comparison.textContent = difference > 0
+      ? `Você melhorou ${difference} pontos percentuais em relação à tentativa anterior.`
+      : difference < 0
+        ? `Seu resultado ficou ${Math.abs(difference)} pontos percentuais abaixo da tentativa anterior.`
+        : "Você manteve o mesmo aproveitamento da tentativa anterior.";
+    history.appendChild(comparison);
+  } else {
+    const first = document.createElement("p");
+    first.textContent = "Esta foi sua primeira tentativa salva neste navegador.";
+    history.appendChild(first);
+  }
+
+  historyData.slice().reverse().forEach((entry,index) => {
+    const line = document.createElement("div");
+    const date = new Date(entry.date).toLocaleString("pt-BR");
+    line.textContent = `${date} — ${entry.correct}/${entry.total} (${entry.percent}%)`;
+    history.appendChild(line);
   });
 
   window.scrollTo(0,0);
